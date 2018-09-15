@@ -9,11 +9,13 @@ app.use(express.static('page'))
 app.use(jsonParser)
 
 app.post('/getTimeline', (req, res) => {
-  // console.log(req.body)
+  console.log(req.body)
   var account = req.body.account.map(item => {
     return getUid(item)
   })
   var targetId = ''
+  var start = req.body.start
+  var end = req.body.end
   getUid(req.body.searchAccount)
     .then(searchId => {
       targetId = searchId
@@ -22,8 +24,9 @@ app.post('/getTimeline', (req, res) => {
     })
     .then(allAccount => {
       // console.log(allAccount)
+      var offset = new Date(end).toISOString()
       var getAllTimeline = allAccount.map(item => {
-        return getTimeline(item)
+        return getTimeline(item, offset)
       })
       return Promise.all(getAllTimeline)
     })
@@ -40,15 +43,6 @@ app.post('/getTimeline', (req, res) => {
       return Promise.all(allpostId.map(postId => getResponse(postId)))
     })
     .then(response => {
-      // console.log(
-      //   response
-      //     .filter(item => {
-      //       return item.friends.hasOwnProperty(targetId)
-      //     })
-      //     .map(item => {
-      //       return item.responses
-      //     })
-      // )
       var hasTargetRespones = response.filter(item => {
         return item.friends.hasOwnProperty(targetId)
       })
@@ -60,13 +54,15 @@ app.post('/getTimeline', (req, res) => {
           responses: []
         }
         item.responses.forEach(response => {
-          if (response.user_id == targetId) {
+          if (response.user_id == targetId && Date.parse(response.posted) > start && Date.parse(response.posted) < end) {
             responsesObj.responses.push(response.content)
           }
         })
-        targetRespones.push(responsesObj)
+        if (responsesObj.responses.length) {
+          targetRespones.push(responsesObj)
+        }
       })
-      console.log(targetRespones)
+      // console.log(targetRespones)
       res.json(targetRespones)
     })
     .catch(error => {
@@ -100,13 +96,13 @@ function getUid(account) {
   })
 }
 
-function getTimeline(user_id) {
+function getTimeline(user_id, offset) {
   return new Promise((resolve, reject) => {
     request(
       {
         url: 'https://www.plurk.com/TimeLine/getPlurks',
         method: 'POST',
-        formData: { only_user: 1, user_id: user_id }
+        formData: { offset: offset, only_user: 1, user_id: user_id }
       },
       function(error, response, body) {
         if (error || !body) {

@@ -24,8 +24,8 @@
         <br>
         目標帳號 <input class="mt-4" type="text" v-model.trim="searchAccount">
         <br>
-        起始日 <input class="mt-4" type="date" v-model="date">
-        結束日 <input class="mt-4" type="date" v-model="date">
+        起始日 <input class="mt-4" type="date" v-model="startDate">
+        結束日 <input class="mt-4" type="date" v-model="endDate">
         <button class="btn btn-success" @click="getTimeline">查詢留言</button>
       </div>
       <div class="mt-2 ml-4 py-3" v-for="item in timeline" style="background-color: rgb(255, 189, 65);width:400px;min-height: 100px;">
@@ -55,7 +55,7 @@
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ 'account': this.account.split(' '), 'searchAccount': this.searchAccount, 'offset': this.isoDate })
+            body: JSON.stringify({ 'account': this.account.split(' '), 'searchAccount': this.searchAccount, 'offset': this.isoDate, 'start': this.start, 'end': this.end })
           }).then((res) => {
             return res.json()
           }).then((json) => {
@@ -70,11 +70,11 @@
         start() {
           if (this.startDate) {
             var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-            var dateArray = this.date.split('-')
+            var dateArray = this.startDate.split('-')
             var month = months[dateArray[1] * 1 - 1]
             //GMT+8 的03:00 換成 GMT+0的時間
             var dateString = new Date(`${dateArray[2]} ${month} ${dateArray[0]} 3:00:00`)
-            return dateString.toISOString()
+            return Date.parse(dateString)
           }
           else {
             var defaultDate = new Date()
@@ -84,17 +84,17 @@
             defaultDate.setMinutes(0)
             defaultDate.setSeconds(0)
             defaultDate.setMilliseconds(0)
-            return defaultDate.toISOString()
+            return Date.parse(defaultDate)
           }
         },
         end() {
-          if (this.startDate) {
+          if (this.endDate) {
             var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-            var dateArray = this.date.split('-')
+            var dateArray = this.endDate.split('-')
             var month = months[dateArray[1] * 1 - 1]
             //GMT+8 的03:00 換成 GMT+0的時間
             var dateString = new Date(`${dateArray[2]} ${month} ${dateArray[0]} 3:00:00`)
-            return dateString.toISOString()
+            return Date.parse(dateString)
           }
           else {
             var defaultDate = new Date()
@@ -103,7 +103,7 @@
             defaultDate.setMinutes(0)
             defaultDate.setSeconds(0)
             defaultDate.setMilliseconds(0)
-            return defaultDate.toISOString()
+            return Date.parse(defaultDate)
           }
         },
       }
