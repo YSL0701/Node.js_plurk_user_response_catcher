@@ -40,19 +40,34 @@ app.post('/getTimeline', (req, res) => {
       return Promise.all(allpostId.map(postId => getResponse(postId)))
     })
     .then(response => {
-      console.log(
-        response
-          .filter(item => {
-            return item.friends.hasOwnProperty(targetId)
-          })
-          .map(item => {
-            return item.responses
-          })
-      )
+      // console.log(
+      //   response
+      //     .filter(item => {
+      //       return item.friends.hasOwnProperty(targetId)
+      //     })
+      //     .map(item => {
+      //       return item.responses
+      //     })
+      // )
       var hasTargetRespones = response.filter(item => {
         return item.friends.hasOwnProperty(targetId)
       })
-      res.json(hasTargetRespones)
+      var targetRespones = []
+      // 過濾出只有目標帳號的回應
+      hasTargetRespones.forEach(item => {
+        var responsesObj = {
+          url: item.url,
+          responses: []
+        }
+        item.responses.forEach(response => {
+          if (response.user_id == targetId) {
+            responsesObj.responses.push(response.content)
+          }
+        })
+        targetRespones.push(responsesObj)
+      })
+      console.log(targetRespones)
+      res.json(targetRespones)
     })
     .catch(error => {
       console.log(error)
@@ -117,6 +132,7 @@ function getResponse(postId) {
           return reject('發生錯誤')
         }
         response = JSON.parse(body)
+        response.url = `https://www.plurk.com/p/${postId.toString(36)}`
         resolve(response)
       }
     )
