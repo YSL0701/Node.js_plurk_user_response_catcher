@@ -40,8 +40,9 @@
     var app = new Vue({
       el: '#app',
       data: {
-        account: '',
-        searchAccount: ' ',
+        account:
+          'miraculism a123912391339 angle840616 catyll dobgi10019 e19940604 ichiiseisai kamer71372 plutoOfour ru8plus wang18562 cathsung bunchesloli bomtan bob85ch bevis0430 asdasd75793 akiyouyone creamdancer davidegg Elena_Shimabara esdfty8889 frostwater8787 GayHi grende_kouki hy124070 H_Hiiragi kalona23 leosjane LI_LAN lost1917 matt86815 morika1823 owennew999 patrick82 rks860617 robo3456 s430063s430063 scarletdogwood skno skyline0425 Sophere wayne0515 yaw010305 yst8577',
+        searchAccount: 'miraculism ',
         startDate: '',
         endDate: '',
         timeline: [],
@@ -65,7 +66,11 @@
             })
             .then(json => {
               console.log(json)
-              this.timeline = json.plurks
+              // this.timeline = json
+              var counter = json.reduce((prev, next) => {
+                return prev + next.responses.length
+              }, 0)
+              console.log(counter)
             })
             .catch(err => {
               console.log('錯誤:', err)

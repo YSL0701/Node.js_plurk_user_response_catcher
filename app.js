@@ -4,7 +4,7 @@ var request = require('request')
 var cheerio = require('cheerio')
 var bodyParser = require('body-parser')
 var jsonParser = bodyParser.json()
-
+var PORT = process.env.PORT || 3000
 app.use(express.static('page'))
 app.use(jsonParser)
 
@@ -70,7 +70,7 @@ app.post('/getTimeline', (req, res) => {
     })
 })
 
-app.listen(3000, function() {
+app.listen(PORT, function() {
   console.log('sever啟動')
 })
 
