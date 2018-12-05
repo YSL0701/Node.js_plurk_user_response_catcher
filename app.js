@@ -83,8 +83,8 @@ function getUid(account) {
       },
       function(error, response, body) {
         var $ = cheerio.load(body)
-        if (error || $('title').text() == 'User Not Found! - Plurk' || $('title').text() == 'Your life, on the line - Plurk') {
-          return reject('帳號不存在!')
+        if (error || $('title').text() == 'User Not Found! - Plurk' || $('title').text() == 'Your life, on the line - Plurk' || $('title').text() == 'Not Found - Plurk') {
+          return resolve(0)
         }
         var user_id = $('.show_all_friends > a')
           .attr('href')
@@ -105,11 +105,12 @@ function getTimeline(user_id, offset) {
         formData: { offset: offset, only_user: 1, user_id: user_id }
       },
       function(error, response, body) {
-        if (error || !body) {
-          return reject('發生錯誤')
+        var plurksData = JSON.parse(body)
+        if (error || plurksData.error === 'NoReadPermissionError') {
+          return resolve({ plurks: [] })
         }
-        response = JSON.parse(body)
-        resolve(response)
+
+        resolve(plurksData)
       }
     )
   })
