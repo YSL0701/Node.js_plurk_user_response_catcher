@@ -34,7 +34,7 @@
       </div>
       <!-- <div class="mt-2 ml-4 py-3" v-for="item in timeline" style="background-color: rgb(255, 189, 65);width:400px;min-height: 100px;"><div class="mx-2" v-html="item.content"></div></div> -->
       <div class="url ml-5" v-for="item in timeline">
-        <a :href="item.url">{{ item.url }}</a>
+        <a :href="item.url" target="_blank">{{ item.url }}</a>
         <div class="responseCount">{{ item.responses.length }}</div>
       </div>
       <div class="allCount ml-5" v-if="timeline">{{ allCount }}</div>
