@@ -26,7 +26,7 @@ app.post('/getTimeline', (req, res) => {
       // console.log(allAccount)
       var offset = new Date(end).toISOString()
       var getAllTimeline = allAccount.map(item => {
-        return getTimeline(item, offset)
+        return getTimeline(item, offset, req.body.start)
       })
       return Promise.all(getAllTimeline)
     })
@@ -96,7 +96,7 @@ function getUid(account) {
   })
 }
 
-function getTimeline(user_id, offset) {
+function getTimeline(user_id, offset, start) {
   return new Promise((resolve, reject) => {
     request(
       {
@@ -109,8 +109,34 @@ function getTimeline(user_id, offset) {
         if (error || plurksData.error === 'NoReadPermissionError') {
           return resolve({ plurks: [] })
         }
-
-        resolve(plurksData)
+        // 用來繼續發出 request 的 function，遞迴至取得的舊文章的發文日比起使日早或是沒有舊文章
+        function getMore(newOffset) {
+          request(
+            {
+              url: 'https://www.plurk.com/TimeLine/getPlurks',
+              method: 'POST',
+              formData: { offset: newOffset, only_user: 1, user_id }
+            },
+            function(error, response, body) {
+              var morePlurksData = JSON.parse(body)
+              if (morePlurksData.plurks.length === 0) {
+                return resolve(plurksData)
+              }
+              plurksData.plurks = [...plurksData.plurks, ...morePlurksData.plurks]
+              if (Date.parse(morePlurksData.plurks[morePlurksData.plurks.length - 1].posted) > start) {
+                return getMore(new Date(morePlurksData.plurks[morePlurksData.plurks.length - 1].posted).toISOString())
+              } else {
+                return resolve(plurksData)
+              }
+            }
+          )
+        }
+        // 如果最後一則文章的發文時間的時間比起始日晚，則繼續發出 request
+        if (plurksData.plurks.length > 0 && Date.parse(plurksData.plurks[plurksData.plurks.length - 1].posted) > start) {
+          return getMore(new Date(plurksData.plurks[plurksData.plurks.length - 1].posted).toISOString())
+        } else {
+          resolve(plurksData)
+        }
       }
     )
   })
