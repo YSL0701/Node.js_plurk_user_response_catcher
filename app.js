@@ -44,7 +44,7 @@ app.post('/getTimeline', (req, res) => {
     })
     .then(response => {
       var hasTargetRespones = response.filter(item => {
-        return item.friends.hasOwnProperty(targetId)
+        return item.users.hasOwnProperty(targetId)
       })
       var targetRespones = []
       // 過濾出只有目標帳號的回應
