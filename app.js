@@ -146,9 +146,9 @@ function getResponse(postId) {
   return new Promise((resolve, reject) => {
     request(
       {
-        url: 'https://www.plurk.com/Responses/get2',
+        url: 'https://www.plurk.com/Responses/get',
         method: 'POST',
-        formData: { from_response: 0, plurk_id: postId }
+        formData: { from_response_id: 0, plurk_id: postId }
       },
       function(error, response, body) {
         if (error || !body) {
