@@ -60,9 +60,9 @@
       <div>
         <div class="mt-4"><span class="text">查詢帳號</span> <input type="text" v-model.trim="account" style="width: calc(100% - 100px);min-width: 200px;" /></div>
         <div class="mt-4"><span class="text">目標帳號</span> <input type="text" v-model.trim="searchAccount" /></div>
-        <span class="text">起始日</span> <input class="mt-4" type="date" v-model="startDate" /><span class="text"> 0:00</span><br />
+        <span class="text">起始日</span> <input class="mt-4" type="date" v-model="startDate" /><span class="text"> 3:00</span><br />
         <span class="text">結束日</span>
-        <input class="mt-4" type="date" v-model="endDate" /><span class="text"> 0:00</span><br />
+        <input class="mt-4" type="date" v-model="endDate" /><span class="text"> 3:00</span><br />
         <button class="btn btn-success mt-4" @click="getTimeline" style="min-width: 126px;">
           <span v-if="!isLoading">查詢留言文章</span>
           <span v-else><img src="./Rolling-1s-200px.gif" class="loading"/></span>
@@ -127,13 +127,14 @@
             var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
             var dateArray = this.startDate.split('-')
             var month = months[dateArray[1] * 1 - 1]
-            var dateString = new Date(`${dateArray[2]} ${month} ${dateArray[0]} 0:00:00`)
+            //GMT+8 的03:00 換成 GMT+0的時間
+            var dateString = new Date(`${dateArray[2]} ${month} ${dateArray[0]} 3:00:00`)
             return Date.parse(dateString)
           } else {
             var defaultDate = new Date()
             var day = defaultDate.getDate()
             defaultDate.setDate(day - 1)
-            defaultDate.setHours(0)
+            defaultDate.setHours(3)
             defaultDate.setMinutes(0)
             defaultDate.setSeconds(0)
             defaultDate.setMilliseconds(0)
@@ -145,12 +146,13 @@
             var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
             var dateArray = this.endDate.split('-')
             var month = months[dateArray[1] * 1 - 1]
-            var dateString = new Date(`${dateArray[2]} ${month} ${dateArray[0]} 0:00:00`)
+            //GMT+8 的03:00 換成 GMT+0的時間
+            var dateString = new Date(`${dateArray[2]} ${month} ${dateArray[0]} 3:00:00`)
             return Date.parse(dateString)
           } else {
             var defaultDate = new Date()
             var day = defaultDate.getDate()
-            defaultDate.setHours(0)
+            defaultDate.setHours(3)
             defaultDate.setMinutes(0)
             defaultDate.setSeconds(0)
             defaultDate.setMilliseconds(0)
