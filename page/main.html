@@ -23,21 +23,56 @@
       integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
       crossorigin="anonymous"
     ></script>
+    <style>
+      body {
+        background-image: url('https://images.unsplash.com/photo-1546365831-cd36e1e4d63e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1000&q=80');
+        background-attachment: fixed;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        min-height: 100vh;
+        font-family: Microsoft JhengHei;
+      }
+      #app {
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-bottom: 30px;
+      }
+      .text {
+        color: #ffffff;
+        font-weight: bold;
+        font-size: 18px;
+      }
+      .loading {
+        height: 20px;
+      }
+      a:hover {
+        color: #ffffff;
+      }
+    </style>
   </head>
 
   <body>
     <div id="app">
-      <div class="ml-5">
-        帳號 <input class="mt-4" type="text" v-model.trim="account" style="width: 500px;" /> <br />
-        目標帳號 <input class="mt-4" type="text" v-model.trim="searchAccount" /> <br />
-        起始日 <input class="mt-4" type="date" v-model="startDate" /> 結束日 <input class="mt-4" type="date" v-model="endDate" /> <button class="btn btn-success" @click="getTimeline">查詢留言</button>
+      <div>
+        <div class="mt-4"><span class="text">查詢帳號</span> <input type="text" v-model.trim="account" style="width: calc(100% - 100px);min-width: 200px;" /></div>
+        <div class="mt-4"><span class="text">目標帳號</span> <input type="text" v-model.trim="searchAccount" /></div>
+        <span class="text">起始日</span> <input class="mt-4" type="date" v-model="startDate" /><span class="text"> 0:00</span><br />
+        <span class="text">結束日</span>
+        <input class="mt-4" type="date" v-model="endDate" /><span class="text"> 0:00</span><br />
+        <button class="btn btn-success mt-4" @click="getTimeline" style="min-width: 126px;">
+          <span v-if="!isLoading">查詢留言文章</span>
+          <span v-else><img src="./Rolling-1s-200px.gif" class="loading"/></span>
+        </button>
       </div>
-      <!-- <div class="mt-2 ml-4 py-3" v-for="item in timeline" style="background-color: rgb(255, 189, 65);width:400px;min-height: 100px;"><div class="mx-2" v-html="item.content"></div></div> -->
-      <div class="url ml-5" v-for="item in timeline">
-        <a :href="item.url" target="_blank">{{ item.url }}</a>
-        <div class="responseCount">{{ item.responses.length }}</div>
+      <div class="url mt-3" v-for="item in timeline">
+        <a :href="item.url" target="_blank" class="text">{{ item.url }}</a>
+        <span class="responseCount text ml-2">留言數量 {{ item.responses.length }}</span>
       </div>
-      <div class="allCount ml-5" v-if="timeline">{{ allCount }}</div>
+      <div class="allCount mt-4 text" v-if="timeline.length">總留言數量 {{ allCount }}</div>
     </div>
   </body>
 
@@ -47,10 +82,11 @@
       data: {
         account:
           'miraculism a123912391339 angle840616 catyll dobgi10019 e19940604 ichiiseisai kamer71372 plutoOfour ru8plus wang18562 cathsung bunchesloli bomtan bob85ch bevis0430 asdasd75793 akiyouyone creamdancer davidegg Elena_Shimabara esdfty8889 frostwater8787 GayHi grende_kouki hy124070 H_Hiiragi kalona23 leosjane LI_LAN lost1917 matt86815 morika1823 owennew999 patrick82 rks860617 robo3456 s430063s430063 scarletdogwood skno skyline0425 Sophere wayne0515 yaw010305 yst8577 minmin30024 AjiaP',
-        searchAccount: 'miraculism ',
+        searchAccount: 'miraculism',
         startDate: '',
         endDate: '',
         timeline: [],
+        isLoading: false,
         // apiUrl: "http://localhost:3000/getTimeline"
         apiUrl: 'https://plurk-response-catcher.herokuapp.com/getTimeline'
       },
@@ -59,6 +95,7 @@
           if (!this.account) {
             return
           }
+          this.isLoading = true
           fetch(this.apiUrl, {
             method: 'POST',
             headers: {
@@ -72,12 +109,14 @@
             .then(json => {
               console.log(json)
               this.timeline = json
+              this.isLoading = false
               var counter = json.reduce((prev, next) => {
                 return prev + next.responses.length
               }, 0)
               console.log(counter)
             })
             .catch(err => {
+              this.isLoading = false
               console.log('錯誤:', err)
             })
         }
@@ -88,14 +127,13 @@
             var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
             var dateArray = this.startDate.split('-')
             var month = months[dateArray[1] * 1 - 1]
-            //GMT+8 的03:00 換成 GMT+0的時間
-            var dateString = new Date(`${dateArray[2]} ${month} ${dateArray[0]} 3:00:00`)
+            var dateString = new Date(`${dateArray[2]} ${month} ${dateArray[0]} 0:00:00`)
             return Date.parse(dateString)
           } else {
             var defaultDate = new Date()
             var day = defaultDate.getDate()
             defaultDate.setDate(day - 1)
-            defaultDate.setHours(3)
+            defaultDate.setHours(0)
             defaultDate.setMinutes(0)
             defaultDate.setSeconds(0)
             defaultDate.setMilliseconds(0)
@@ -107,13 +145,12 @@
             var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
             var dateArray = this.endDate.split('-')
             var month = months[dateArray[1] * 1 - 1]
-            //GMT+8 的03:00 換成 GMT+0的時間
-            var dateString = new Date(`${dateArray[2]} ${month} ${dateArray[0]} 3:00:00`)
+            var dateString = new Date(`${dateArray[2]} ${month} ${dateArray[0]} 0:00:00`)
             return Date.parse(dateString)
           } else {
             var defaultDate = new Date()
             var day = defaultDate.getDate()
-            defaultDate.setHours(3)
+            defaultDate.setHours(0)
             defaultDate.setMinutes(0)
             defaultDate.setSeconds(0)
             defaultDate.setMilliseconds(0)
@@ -125,6 +162,28 @@
             return prev + next.responses.length
           }, 0)
         }
+      },
+      created() {
+        var startDate = new Date().toLocaleDateString().split('/')
+        startDate.splice(2, 1, (startDate[2] * 1 - 1).toString(10))
+        this.startDate = startDate
+          .map(str => {
+            if (str * 1 < 10) {
+              str = '0' + str
+            }
+            return str
+          })
+          .join('-')
+        this.endDate = new Date()
+          .toLocaleDateString()
+          .split('/')
+          .map(str => {
+            if (str * 1 < 10) {
+              str = '0' + str
+            }
+            return str
+          })
+          .join('-')
       }
     })
   </script>
