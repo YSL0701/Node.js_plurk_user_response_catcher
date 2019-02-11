@@ -92,7 +92,7 @@
       },
       methods: {
         getTimeline() {
-          if (!this.account) {
+          if (!this.account || this.isLoading) {
             return
           }
           this.isLoading = true

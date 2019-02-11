@@ -86,11 +86,16 @@ function getUid(account) {
         if (error || $('title').text() == 'User Not Found! - Plurk' || $('title').text() == 'Your life, on the line - Plurk' || $('title').text() == 'Not Found - Plurk') {
           return resolve(0)
         }
-        var user_id = $('.show_all_friends > a')
-          .attr('href')
-          .split('=')[1]
-          .split('&')[0]
-        resolve(user_id)
+        try {
+          var user_id = $('.show_all_friends > a')
+            .attr('href')
+            .split('=')[1]
+            .split('&')[0]
+          resolve(user_id)
+        } catch {
+          console.log(body)
+          return resolve(0)
+        }
       }
     )
   })
@@ -154,9 +159,14 @@ function getResponse(postId) {
         if (error || !body) {
           return reject('發生錯誤')
         }
-        response = JSON.parse(body)
-        response.url = `https://www.plurk.com/p/${postId.toString(36)}`
-        resolve(response)
+        try {
+          response = JSON.parse(body)
+          response.url = `https://www.plurk.com/p/${postId.toString(36)}`
+          resolve(response)
+        } catch {
+          console.log(body)
+          reject('發生錯誤')
+        }
       }
     )
   })
