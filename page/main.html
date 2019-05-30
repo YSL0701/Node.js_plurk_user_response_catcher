@@ -63,6 +63,10 @@
         <span class="text">起始日</span> <input class="mt-4" type="date" v-model="startDate" /><span class="text"> 3:00</span><br />
         <span class="text">結束日</span>
         <input class="mt-4" type="date" v-model="endDate" /><span class="text"> 3:00</span><br />
+        <div class=" mt-3">
+          <button class="btn btn-secondary" @click="account = firstAccounts">常用組合</button>
+          <button class="btn btn-secondary ml-3" @click="account = firstAccounts+' '+secondAccounts">其他組合</button>
+        </div>
         <button class="btn btn-success mt-4" @click="getTimeline" style="min-width: 126px;">
           <span v-if="!isLoading">查詢留言文章</span>
           <span v-else><img src="./Rolling-1s-200px.gif" class="loading"/></span>
@@ -82,6 +86,8 @@
       data: {
         account:
           'miraculism a123912391339 angle840616 catyll dobgi10019 e19940604 ichiiseisai kamer71372 plutoOfour ru8plus wang18562 cathsung bunchesloli bomtan bob85ch bevis0430 asdasd75793 akiyouyone creamdancer davidegg Elena_Shimabara esdfty8889 frostwater8787 GayHi grende_kouki hy124070 H_Hiiragi kalona23 leosjane LI_LAN lost1917 matt86815 morika1823 owennew999 patrick82 rks860617 robo3456 s430063s430063 scarletdogwood skno skyline0425 Sophere wayne0515 yaw010305 yst8577 minmin30024 AjiaP',
+        firstAccounts: 'miraculism dobgi10019 bob85ch bevis0430 asdasd75793 davidegg Elena_Shimabara GayHi grende_kouki hy124070 kalona23 LI_LAN patrick82 rks860617 robo3456 skno Sophere',
+        secondAccounts: 'angle840616 catyll ichiiseisai plutoOfour wang18562 cathsung bomtan akiyouyone creamdancer leosjane lost1917 matt86815 morika1823 wayne0515 yaw010305',
         searchAccount: 'miraculism',
         startDate: '',
         endDate: '',
